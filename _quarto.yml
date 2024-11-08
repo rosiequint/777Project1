@@ -22,3 +22,9 @@ editor: visual
 
 bibliography: references.bib
 csl: apa.csl
+
+publish:
+  gh-pages:
+    url: "https://github.com/jhu-statprogramming-fall-2024/project1-rosiequint"
+    branch: gh-pages 
+    dir: _site
