@@ -1,0 +1,38 @@
+"0","poverty_county_data <- read_csv(""/Users/rosiequint/Desktop/ScM Biostats/140.777 Stat Programming/Project1/poverty_county_data.csv"","
+"0","                                skip = 4,"
+"0","                                col_types = cols("
+"0","                                  County = col_character(),"
+"0","                                  FIPS = col_character(),"
+"0","                                  `Rank within US (of 3143 counties)` = col_character(),"
+"0","                                  `Value (Percent)` = col_double(),"
+"0","                                  `People (<150% Of Poverty)` = col_double()"
+"0","                                  ),"
+"0","                                na = c("""", ""NA"")"
+"0",")"
+"2","Warning: [38;5;232mOne or more parsing issues, call `problems()` on your data frame for details, e.g.:
+  dat <- vroom(...)
+  problems(dat)[39m"
+"0","pm25_county_data <- read_csv(""/Users/rosiequint/Desktop/ScM Biostats/140.777 Stat Programming/Project1/pm2.5_county_data.csv"", skip = 5, na = c("""", ""NA""))"
+"2","Warning: [38;5;232mOne or more parsing issues, call `problems()` on your data frame for details, e.g.:
+  dat <- vroom(...)
+  problems(dat)[39m"
+"2","[1mRows: [22m[34m3151[39m [1mColumns: [22m[34m3[39m"
+"2","[36m──[39m [1mColumn specification[22m [36m────────────────────────────────────────────────────────────────────────────────[39m
+[1mDelimiter:[22m "",""
+[31mchr[39m (2): County, FIPS
+[32mdbl[39m (1): Micrograms per cubic meter (PM2.5)(2)"
+"2","
+[36mℹ[39m Use `spec()` to retrieve the full column specification for this data.
+[36mℹ[39m Specify the column types or set `show_col_types = FALSE` to quiet this message."
+"0","pm25_county_data <- pm25_county_data %>%"
+"0","  separate(col = County, into = c(""County"", ""State""), sep = "", "") %>%"
+"0","  filter(State == ""Maryland"") %>%"
+"0","  mutate(County = str_replace(County, "" County$"", """"))"
+"2","Warning: Expected 2 pieces. Missing pieces filled with `NA` in 9 rows [1, 697, 3137, 3145, 3146, 3147, 3148, 3149, 3150]."
+"0","combined_pollution_poverty_data <- poverty_county_data %>%"
+"0","  inner_join(pm25_county_data, by = ""FIPS"") %>%"
+"0","  select(County.x, `Value (Percent)`, `Micrograms per cubic meter (PM2.5)(2)`) %>%"
+"0","  rename("
+"0","    `County` = County.x,"
+"0","    `Proportions of Persons below 150% of Poverty` = `Value (Percent)`"
+"0","  )"

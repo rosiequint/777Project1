@@ -1,0 +1,38 @@
+﻿Poverty (Persons below 150% of poverty) for Maryland by County
+"All Races (includes Hispanic/Latino), Both Sexes, All Ages, 2018-2022"
+Sorted by Value
+
+County,FIPS,Value (Percent),People (<150% Of Poverty),Rank within US (of 3143 counties)
+"United States",00000,20.5,66233791,"N/A"
+"Maryland",24000,14.9,897706,"2 of 52"
+"Somerset County",24039,29.5,5832,"2,407"
+"Baltimore City",24510,29.4,165879,"2,395"
+"Caroline County",24011,26.6,8721,"2,088"
+"Allegany County",24001,26.4,16142,"2,062"
+"Dorchester County",24019,25.6,8220,"1,939"
+"Wicomico County",24045,23.0,23050,"1,574"
+"Garrett County",24023,20.1,5668,"1,123"
+"Washington County",24043,20.1,29456,"1,118"
+"Kent County",24029,17.6,3124,"731"
+"Cecil County",24015,17.6,17985,"724"
+"Talbot County",24041,16.4,6095,"578"
+"Baltimore County",24005,16.1,134140,"544"
+"Worcester County",24047,15.0,7809,"400"
+"Prince Georges County",24033,14.9,139608,"392"
+"St. Marys County",24037,12.5,13870,"188"
+"Montgomery County",24031,12.0,125900,"162"
+"Harford County",24025,11.9,30930,"160"
+"Queen Annes County",24035,11.2,5599,"123"
+"Charles County",24017,10.1,16713,"72"
+"Anne Arundel County",24003,9.7,56270,"60"
+"Frederick County",24021,9.6,25927,"59"
+"Carroll County",24013,8.9,15041,"41"
+"Howard County",24027,8.7,28513,"39"
+"Calvert County",24009,7.8,7214,"22"
+
+Suggested Citation:
+HDPulse: An Ecosystem of Minority Health and Health Disparities Resources. National Institute on Minority Health and Health Disparities. Created 11/8/2024. Available from https://hdpulse.nimhd.nih.gov
+
+Notes:
+Source: Demographic data provided by the Census Bureau (http://www.census.gov/) & the American Community Survey (http://www.census.gov/acs/www/).
+"For more information about Poverty (Persons below 150% of poverty), see the dictionary at http://hdpulse.nimhd.nih.gov/data/dictionary.php#poverty."

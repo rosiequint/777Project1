@@ -1,0 +1,267 @@
+# Research aims
+
+In this data analysis, I aimed to investigate the relationship between air pollution, health, and poverty in Maryland. I did this using publicly available data from the Environmental Protection Agency and the National Institute on Minority Health and Health Disparities. The code, data analysis, and results are shown below.
+
+The intended audience for this analysis would be public health policymakers seeking to understand how current trends in air pollution in Maryland impact human health in the past, present and future.
+
+![](images/maryland_map.jpeg)
+
+::: {.callout-tip collapse = "true"}
+## Sources and Data Dictionaries
+
+Data for part 1: Baltimore air quality ([@epa_air_quality]). [Data Dictionary](https://www.epa.gov/outdoor-air-quality-data/about-air-data-reports)
+
+Data for part 2: PM2.5 by county ([@nihmd-air_pollution]), Life expectancy by county ([@maryland_life_expectancy]), Poverty by county ([@nihmd_poverty]), [Data Dictionary](https://hdpulse.nimhd.nih.gov/data-portal/physical/table?age=001&age_options=ageall_1&demo=234&demo_options=air_pollution_1&physicaltopic=002&physicaltopic_options=physical_2&race=00&race_options=raceall_1&sex=0&sex_options=sexboth_1&statefips=99&statefips_options=area_states&race_saved=00&sex_saved=0&statefips_saved=99)
+
+:::
+
+# Data analysis
+
+## Part 1: Baltimore air quality data over time
+
+In this section, I created visuals to show how levels of air pollutants have been falling in Baltimore across the last 40 years. This can likely be attributed to state- and federal-level interventions aiming to address the climate crisis. One example would be the Maryland Healthy Air Act of 2001 ([@maryland_air_quality_health]). Here, I used data from Baltimore. As the largest city in Maryland, one would expect changes to pollution regulations to have the largest effects here. In the subsequent parts of this analysis, I consider the effects that these changes (many of which are recent) can be expected to have on people's health.
+
+```{r}
+library(tidyverse)
+
+clean_data <- function(data, year) { #cleaning the data by dealing with the different labelling of NA values ("NA" for some categories and "." for others )
+  data %>%
+    mutate(
+      year = {{year}},
+      across(
+        where(is.character), 
+        ~ ifelse(. == ".", NA, .) 
+      ),
+      across(
+        matches("PM10.2nd.Max.24.hr|PM10.Mean.24.hr|PM2.5.98th.Percentile.24.hr|PM2.5.Weighted.Mean.24.hr|CO.2nd.Max.1.hr|CO.2nd.Max.8.hr|NO2.98th.Percentile.1.hr|NO2.Mean.1.hr|Ozone.2nd.Max.1.hr|Ozone.4th.Max.8.hr|SO2.99th.Percentile.1.hr|SO2.2nd.Max.24.hr|SO2.Mean.1.hr|Lead.Max.3.Mo.Avg"),
+        ~ as.numeric(.)
+      )
+    )
+}
+
+b_data_1982 <- clean_data(read_csv("/Users/rosiequint/Desktop/ScM Biostats/140.777 Stat Programming/Project1/conreport1982.csv", show_col_types = FALSE), 1982)
+b_data_1987 <- clean_data(read_csv("/Users/rosiequint/Desktop/ScM Biostats/140.777 Stat Programming/Project1/conreport1987.csv", show_col_types = FALSE), 1987)
+b_data_1992 <- clean_data(read_csv("/Users/rosiequint/Desktop/ScM Biostats/140.777 Stat Programming/Project1/conreport1992.csv", show_col_types = FALSE), 1992)
+b_data_1997 <- clean_data(read_csv("/Users/rosiequint/Desktop/ScM Biostats/140.777 Stat Programming/Project1/conreport1997.csv", show_col_types = FALSE), 1997)
+b_data_2002 <- clean_data(read_csv("/Users/rosiequint/Desktop/ScM Biostats/140.777 Stat Programming/Project1/conreport2002.csv", show_col_types = FALSE), 2002)
+b_data_2007 <- clean_data(read_csv("/Users/rosiequint/Desktop/ScM Biostats/140.777 Stat Programming/Project1/conreport2007.csv", show_col_types = FALSE), 2007)
+b_data_2012 <- clean_data(read_csv("/Users/rosiequint/Desktop/ScM Biostats/140.777 Stat Programming/Project1/conreport2012.csv", show_col_types = FALSE), 2012)
+b_data_2017 <- clean_data(read_csv("/Users/rosiequint/Desktop/ScM Biostats/140.777 Stat Programming/Project1/conreport2017.csv", show_col_types = FALSE), 2017)
+b_data_2022 <- clean_data(read_csv("/Users/rosiequint/Desktop/ScM Biostats/140.777 Stat Programming/Project1/conreport2022.csv", show_col_types = FALSE), 2022)
+
+```
+
+```{r}
+#Creating a single data frame for air quality by year
+baltimore_air_quality <- bind_rows(b_data_1982, b_data_1987, b_data_1992, b_data_1997, b_data_2002, b_data_2007, b_data_2012,  b_data_2017, b_data_2022) %>%
+  select(-`Lead Max 3-Mo Avg`, -`CBSA Code`, -CBSA) #get rid because no data for any years
+
+print(baltimore_air_quality)
+```
+
+```{r}
+# Create a new variable 'Pollutant' to distinguish between pollutants
+baltimore_air_quality <- baltimore_air_quality %>%
+  select(year, contains("CO"), contains("NO2"), contains("Ozone"), contains("SO2"), contains("PM2.5"), contains("PM10")) %>%
+  pivot_longer(
+    cols = -year,
+    names_to = "Metric",
+    values_to = "Value"
+  ) %>%
+  mutate(
+    Pollutant = case_when(
+      str_detect(Metric, "CO") ~ "CO",
+      str_detect(Metric, "NO2") ~ "NO2",
+      str_detect(Metric, "Ozone") ~ "Ozone",  # Use 'Ozone' instead of 'O3'
+      str_detect(Metric, "SO2") ~ "SO2",
+      str_detect(Metric, "PM2.5") ~ "PM2.5",
+      str_detect(Metric, "PM10") ~ "PM10",
+      TRUE ~ "Other"
+    )
+  )
+
+```
+
+::: callout-note
+## Plot 1: Baltimore air pollution over time, grouped by pollutant type
+
+Here I created a plot for air pollution in Baltimore over time, grouped by pollutant type.
+
+14 variables were measured in total. One was removed (Lead Max 3-Mo. Avg) as there were no observations for any of the years studied. For the plot, I decided to group data by pollutant (e.g. showing both measurements for NO2 (98th percentile and mean) and plot onto the same graph.
+:::
+
+```{r}
+baltimore_air_quality %>%
+  drop_na(Value) %>%
+  ggplot(aes(x = year, y = Value, color = Metric)) +
+  geom_line() +
+  facet_wrap(~ Pollutant, scales = "free_y") +  
+  labs(
+    title = "Changesin Baltimore Air Pollutant Metrics Over Time,  1982-2022",
+    x = "Year",
+    y = "Value"
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+## Part 2: Investigating the relationship between PM2.5 and poverty rates by Maryland County.
+
+To further explore the relationship between air quality regulation and human health in Maryland, I investigated the relationship between poverty and air pollution by county. I compared county-level data on mean PM2.5 concentration with the proportion living in poverty in each county.I chose to investigate PM2.5 specifically as it is believed to be the most harmful to human health, which was a central topic of my investigation ([@who_air_quality)]. I joined the data from two datasets by county, resulting in county-level data on Micrograms per cubic meter of PM2.5 and Proportions of Persons below 150% of Poverty, with both datasets from 2023.
+
+::: column-margin
+![](md_poverty_map.webp.webp)
+:::
+
+```{r}
+poverty_county_data <- read_csv("/Users/rosiequint/Desktop/ScM Biostats/140.777 Stat Programming/Project1/poverty_county_data.csv", skip = 4, na = c("", "NA"))
+pm25_county_data <- read_csv("/Users/rosiequint/Desktop/ScM Biostats/140.777 Stat Programming/Project1/pm2.5_county_data.csv", skip = 5, na = c("", "NA"))
+
+
+pm25_county_data <- pm25_county_data %>%
+  separate(col = County, into = c("County", "State"), sep = ", ") %>%
+  filter(State == "Maryland") %>%
+  mutate(County = str_replace(County, " County$", ""))
+
+combined_pollution_poverty_data <- poverty_county_data %>%
+  inner_join(pm25_county_data, by = "FIPS") %>%
+  select(County.x, `Value (Percent)`, `Micrograms per cubic meter (PM2.5)(2)`) %>%
+  rename(
+    `County` = County.x,
+    `Proportions of Persons below 150% of Poverty` = `Value (Percent)`
+  )
+```
+
+::: callout-note
+## Plot 2: Air pollution (mean PM2.5 concentration) and poverty by Maryland county
+
+Here I generated a scatter plot showing the relationship between poverty (measured as the proportion of persons below 150% of the poverty threshold) and air pollution (measured as micrograms of PM2.5 per cubic metre) by Maryland County. I included a regression line which shows a negative correlation (i.e. counties with higher levels of air pollutants having lower rates of poverty). This came as a surprise given the commonly-described association between poverty and poor health (for which air pollution is a known risk factor). However, this could be explained by area-level features such as wealthier counties tending to be more urban and thus have higher levels of pollutants, while poorer counties are more rural. Further research and perhaps an ecological study could help to establish whether this is the case here.
+:::
+
+```{r}
+library(ggplot2)
+
+ggplot(combined_pollution_poverty_data, aes(x = `Micrograms per cubic meter (PM2.5)(2)`, 
+                                            y = `Proportions of Persons below 150% of Poverty`)) +
+  geom_point() +  # Scatter plot
+  geom_smooth(method = "lm", se = FALSE, color = "blue") +  # Linear regression line
+  labs(
+    title = "Scatter Plot of PM2.5 vs. Poverty Proportions with Regression Line",
+    x = "Micrograms per cubic meter (PM2.5)(2)",
+    y = "Proportions of Persons below 150% of Poverty"
+  ) +
+  theme_minimal()
+
+```
+
+## Part 3: Relationship between air pollution, poverty, and life expectancy at a county level in Maryland
+
+Here I created a combined dataset containing air pollution, life expectancy and poverty data for all counties in Maryland.
+
+```{r}
+
+lifeexp_county_data <- read_csv("/Users/rosiequint/Desktop/ScM Biostats/140.777 Stat Programming/Project1/lifeexp_county_data.csv")
+
+lifeexp_county_data <- lifeexp_county_data %>%
+  filter(Year == "2019-2021", `Race/ ethnicity` == "All races/ ethnicities (aggregated)")
+
+
+combined_pollution_poverty_data <- combined_pollution_poverty_data %>% 
+  mutate(County = str_replace(County, " County$", ""))
+
+
+combined_full_data <- combined_pollution_poverty_data %>%
+  inner_join(lifeexp_county_data, by = c("County" = "Jurisdiction")) %>%
+  select(-`Race/ ethnicity`, -`Year`, -`Measure`) %>%
+  rename(`Life Expectancy` = `Value`)
+
+
+# View the combined data
+head(combined_full_data)
+```
+
+::: callout-note
+## Plots 3 and 4: Scatter plots of poverty vs life expectancy and air pollution vs life expectancy
+
+I additionally created scatter plots showing the relationship between poverty and life expectancy, and air pollution and life expectancy across Maryland counties. As would be expected, proportion in poverty and life expectancy have a strong inverse association. Furthermore, pollution appears to have no association with life expectancy. This echoes the previous finding that poverty and pollution did not have a clear association, and is also surprising as we would expect air pollution to have a negative impact on a person's health. Again, controlling for a greater number of area-level factors may reveal a different story.
+:::
+
+```{r}
+ggplot(combined_full_data, aes(x = `Proportions of Persons below 150% of Poverty`, y = `Life Expectancy`)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(title = "Poverty vs. Life Expectancy (Years)", x = "Proportion of Persons Below 150% Poverty", y = "Life Expectancy")
+
+
+ggplot(combined_full_data, aes(x = `Micrograms per cubic meter (PM2.5)(2)`, y = `Life Expectancy`)) +
+  geom_point(color = "blue", alpha = 0.5) + # Scatter plot with transparency
+  geom_smooth(method = "lm", se = FALSE, color = "red") + # Linear regression line
+  labs(
+    title = "Relationship between Air Pollution and Life Expectancy",
+    x = "Air Pollution (PM2.5 in µg/m³)",
+    y = "Life Expectancy (Years)"
+  ) +
+  theme_minimal() + # Minimal theme for clarity
+  theme(
+    plot.title = element_text(hjust = 0.5), # Center the title
+    axis.title = element_text(size = 12),
+    axis.text = element_text(size = 10)
+  )
+
+```
+
+::: callout-note
+## Model 1: Regressing life expectancy on air pollution and poverty measures
+
+Here I developed and tested three regression models for predicting life expectancy using air pollution and/or poverty data. Inspecting all of these models reinforces the trends shown by the scatter plots, with the best model appearing to be that which includes only poverty as a predictor for life expectancy. Adding air quality to this model (as in lm_full_model) as it increases the p-value and lowers the F-statistic. Therefore, all we can conclude from this data is that poverty rates in Maryland's counties is a good predictor for their life expectancy (an already well-established relationship).\
+:::
+
+```{r}
+lm_pollution_poverty <- lm(`Proportions of Persons below 150% of Poverty` ~ `Micrograms per cubic meter (PM2.5)(2)`, data = combined_full_data)
+summary(lm_pollution_poverty)
+lm_life_exp_poverty <- lm(`Life Expectancy` ~ `Proportions of Persons below 150% of Poverty`, data = combined_full_data)
+summary(lm_life_exp_poverty)
+lm_life_exp_pollution <- lm(`Life Expectancy` ~ `Micrograms per cubic meter (PM2.5)(2)`, data = combined_full_data)
+summary(lm_life_exp_pollution)
+
+
+
+lm_full_model <- lm(`Life Expectancy` ~ `Micrograms per cubic meter (PM2.5)(2)` + `Proportions of Persons below 150% of Poverty`, data = combined_full_data)
+summary(lm_full_model)
+
+```
+
+# Results and analysis
+
+First, I briefly explored how air pollution has changed over time in Baltimore City, and found that all of the measured pollutants had decreased in mean concentration over the past 40 years (data from 1982-2022).
+
+I then investigated the relationship between proportion of people in poverty and air pollution (measured by PM2.5 concentration) by county in Maryland, to determine whether there was an association between the two. A scatter plot showed that there appeared to be a slight negative relationship between the two.
+
+Finally, I performed regression analysis to determine whether air pollution could be a good predictor of life expectancy in Maryland's counties. I regressed life expectancy on air pollution and found the model was not a good fit. I then regressed it on poverty as a comparator, as poverty has a known strong association with life expectancy, and found a well-fitting model, as would be expected. I also found that adding air pollution to the regression model did not improve it.
+
+My main finding from this project was that air pollution at a county-level is a fairly poor predictor of both poverty and life expectancy. Anecdotally, I would assume that higher levels of air pollution causes poor health, so I would be inclined to perform follow-up research. However, this apparent lack of correlation could also be simply due to the complexity of measuring health, a lack of data on possible confounders, or simply poor data quality. The data used for this analysis may be limited by its different sources (who may use more or less up-to-date measurements) or its summary nature (offering only one yearly statistic for each county).
+
+# Functions used:
+From dplyr
+filter()
+select()
+mutate()
+rename()
+inner_join()
+summarize()
+group_by()
+arrange()
+From ggplot2
+ggplot()
+aes()
+geom_line()
+geom_point()
+geom_smooth()
+facet_wrap()
+labs()
+theme()
+theme_minimal()
+scale_color_manual()
+From tidyr
+pivot_longer()
+separate()

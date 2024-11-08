@@ -1,0 +1,5 @@
+"0","#Creating a single data frame for air quality by year"
+"0","baltimore_air_quality <- bind_rows(b_data_1982, b_data_1987, b_data_1992, b_data_1997, b_data_2002, b_data_2007, b_data_2012,  b_data_2017, b_data_2022) %>%"
+"0","  select(-`Lead Max 3-Mo Avg`, -`CBSA Code`, -CBSA) #get rid because no data for any years"
+"0",""
+"0","print(baltimore_air_quality)"

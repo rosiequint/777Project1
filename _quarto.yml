@@ -1,0 +1,24 @@
+project:
+  type: website
+
+website:
+  title: "Rosie Quint"
+  navbar:
+    left:
+      - text: "Home"
+        href: index.qmd
+      - text: "About"
+        href: about.qmd
+      - text: "Example Analysis"
+        href: example_analysis.qmd
+
+format:
+  html:
+    theme: cerulean
+    css: styles.css
+    toc: true
+
+editor: visual
+
+bibliography: references.bib
+csl: apa.csl

@@ -1,0 +1,4 @@
+"0","ggplot(combined_full_data, aes(x = `Proportions of Persons below 150% of Poverty`, y = `Life Expectancy`)) +"
+"0","  geom_point() +"
+"0","  geom_smooth(method = ""lm"", se = FALSE) +"
+"0","  labs(title = ""Poverty vs. Life Expectancy"", x = ""Proportion of Persons Below 150% Poverty"", y = ""Life Expectancy"")"
