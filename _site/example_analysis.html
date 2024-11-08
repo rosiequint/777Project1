@@ -20,7 +20,61 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
@@ -111,19 +165,512 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#research-aims" id="toc-research-aims" class="nav-link active" data-scroll-target="#research-aims">Research aims</a></li>
+  <li><a href="#data-analysis" id="toc-data-analysis" class="nav-link" data-scroll-target="#data-analysis">Data analysis</a>
+  <ul class="collapse">
+  <li><a href="#part-1-baltimore-air-quality-data-over-time" id="toc-part-1-baltimore-air-quality-data-over-time" class="nav-link" data-scroll-target="#part-1-baltimore-air-quality-data-over-time">Part 1: Baltimore air quality data over time</a></li>
+  <li><a href="#part-2-investigating-the-relationship-between-pm2.5-and-poverty-rates-by-maryland-county." id="toc-part-2-investigating-the-relationship-between-pm2.5-and-poverty-rates-by-maryland-county." class="nav-link" data-scroll-target="#part-2-investigating-the-relationship-between-pm2.5-and-poverty-rates-by-maryland-county.">Part 2: Investigating the relationship between PM2.5 and poverty rates by Maryland County.</a></li>
+  <li><a href="#part-3-relationship-between-air-pollution-poverty-and-life-expectancy-at-a-county-level-in-maryland" id="toc-part-3-relationship-between-air-pollution-poverty-and-life-expectancy-at-a-county-level-in-maryland" class="nav-link" data-scroll-target="#part-3-relationship-between-air-pollution-poverty-and-life-expectancy-at-a-county-level-in-maryland">Part 3: Relationship between air pollution, poverty, and life expectancy at a county level in Maryland</a></li>
+  </ul></li>
+  <li><a href="#results-and-analysis" id="toc-results-and-analysis" class="nav-link" data-scroll-target="#results-and-analysis">Results and analysis</a></li>
+  <li><a href="#functions-used" id="toc-functions-used" class="nav-link" data-scroll-target="#functions-used">Functions used:</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
+<main class="content page-columns page-full" id="quarto-document-content">
 
 
 
 
+<section id="research-aims" class="level1">
+<h1>Research aims</h1>
+<p>In this data analysis, I aimed to investigate the relationship between air pollution, health, and poverty in Maryland. I did this using publicly available data from the Environmental Protection Agency and the National Institute on Minority Health and Health Disparities. The code, data analysis, and results are shown below.</p>
+<p>The intended audience for this analysis would be public health policymakers seeking to understand how current trends in air pollution in Maryland impact human health in the past, present and future.</p>
+<p><img src="images/maryland_map.jpeg" class="img-fluid"></p>
+<p>::: {.callout-tip collapse = “true”} ## Sources and Data Dictionaries</p>
+<p>Data for part 1: Baltimore air quality (<span class="citation" data-cites="epa_air_quality">(<a href="#ref-epa_air_quality" role="doc-biblioref">Environmental Protection Agency, 2023</a>)</span>). <a href="https://www.epa.gov/outdoor-air-quality-data/about-air-data-reports">Data Dictionary</a></p>
+<p>Data for part 2: PM2.5 by county (<span class="citation" data-cites="nimhd_air_pollution">(<a href="#ref-nimhd_air_pollution" role="doc-biblioref">National Institute on Minority Health and Health Disparities, 2023</a>)</span>), Life expectancy by county (<span class="citation" data-cites="maryland_life_expectancy">(<a href="#ref-maryland_life_expectancy" role="doc-biblioref">Maryland Department of Health, n.d.</a>)</span>), Poverty by county (<span class="citation" data-cites="nimhd_poverty">(<a href="#ref-nimhd_poverty" role="doc-biblioref"><strong>nimhd_poverty?</strong></a>)</span>), <a href="https://hdpulse.nimhd.nih.gov/data-portal/physical/table?age=001&amp;age_options=ageall_1&amp;demo=234&amp;demo_options=air_pollution_1&amp;physicaltopic=002&amp;physicaltopic_options=physical_2&amp;race=00&amp;race_options=raceall_1&amp;sex=0&amp;sex_options=sexboth_1&amp;statefips=99&amp;statefips_options=area_states&amp;race_saved=00&amp;sex_saved=0&amp;statefips_saved=99">Data Dictionary</a></p>
+<p>:::</p>
+</section>
+<section id="data-analysis" class="level1 page-columns page-full">
+<h1>Data analysis</h1>
+<section id="part-1-baltimore-air-quality-data-over-time" class="level2">
+<h2 class="anchored" data-anchor-id="part-1-baltimore-air-quality-data-over-time">Part 1: Baltimore air quality data over time</h2>
+<p>In this section, I created visuals to show how levels of air pollutants have been falling in Baltimore across the last 40 years. This can likely be attributed to state- and federal-level interventions aiming to address the climate crisis. One example would be the Maryland Healthy Air Act of 2001 (<span class="citation" data-cites="maryland_air_quality_health">(<a href="#ref-maryland_air_quality_health" role="doc-biblioref">Maryland Department of the Environment, 2023</a>)</span>). Here, I used data from Baltimore. As the largest city in Maryland, one would expect changes to pollution regulations to have the largest effects here. In the subsequent parts of this analysis, I consider the effects that these changes (many of which are recent) can be expected to have on people’s health.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.1.4     ✔ readr     2.1.5
+✔ forcats   1.0.0     ✔ stringr   1.5.1
+✔ ggplot2   3.5.1     ✔ tibble    3.2.1
+✔ lubridate 1.9.3     ✔ tidyr     1.3.1
+✔ purrr     1.0.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>clean_data <span class="ot">&lt;-</span> <span class="cf">function</span>(data, year) { <span class="co">#cleaning the data by dealing with the different labelling of NA values ("NA" for some categories and "." for others )</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  data <span class="sc">%&gt;%</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>      <span class="at">year =</span> {{year}},</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>      <span class="fu">across</span>(</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>        <span class="fu">where</span>(is.character), </span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>        <span class="sc">~</span> <span class="fu">ifelse</span>(. <span class="sc">==</span> <span class="st">"."</span>, <span class="cn">NA</span>, .) </span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>      ),</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>      <span class="fu">across</span>(</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        <span class="fu">matches</span>(<span class="st">"PM10.2nd.Max.24.hr|PM10.Mean.24.hr|PM2.5.98th.Percentile.24.hr|PM2.5.Weighted.Mean.24.hr|CO.2nd.Max.1.hr|CO.2nd.Max.8.hr|NO2.98th.Percentile.1.hr|NO2.Mean.1.hr|Ozone.2nd.Max.1.hr|Ozone.4th.Max.8.hr|SO2.99th.Percentile.1.hr|SO2.2nd.Max.24.hr|SO2.Mean.1.hr|Lead.Max.3.Mo.Avg"</span>),</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        <span class="sc">~</span> <span class="fu">as.numeric</span>(.)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>      )</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>b_data_1982 <span class="ot">&lt;-</span> <span class="fu">clean_data</span>(<span class="fu">read_csv</span>(<span class="st">"/Users/rosiequint/Desktop/ScM Biostats/140.777 Stat Programming/Project1/conreport1982.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>), <span class="dv">1982</span>)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>b_data_1987 <span class="ot">&lt;-</span> <span class="fu">clean_data</span>(<span class="fu">read_csv</span>(<span class="st">"/Users/rosiequint/Desktop/ScM Biostats/140.777 Stat Programming/Project1/conreport1987.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>), <span class="dv">1987</span>)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>b_data_1992 <span class="ot">&lt;-</span> <span class="fu">clean_data</span>(<span class="fu">read_csv</span>(<span class="st">"/Users/rosiequint/Desktop/ScM Biostats/140.777 Stat Programming/Project1/conreport1992.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>), <span class="dv">1992</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>b_data_1997 <span class="ot">&lt;-</span> <span class="fu">clean_data</span>(<span class="fu">read_csv</span>(<span class="st">"/Users/rosiequint/Desktop/ScM Biostats/140.777 Stat Programming/Project1/conreport1997.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>), <span class="dv">1997</span>)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>b_data_2002 <span class="ot">&lt;-</span> <span class="fu">clean_data</span>(<span class="fu">read_csv</span>(<span class="st">"/Users/rosiequint/Desktop/ScM Biostats/140.777 Stat Programming/Project1/conreport2002.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>), <span class="dv">2002</span>)</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>b_data_2007 <span class="ot">&lt;-</span> <span class="fu">clean_data</span>(<span class="fu">read_csv</span>(<span class="st">"/Users/rosiequint/Desktop/ScM Biostats/140.777 Stat Programming/Project1/conreport2007.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>), <span class="dv">2007</span>)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>b_data_2012 <span class="ot">&lt;-</span> <span class="fu">clean_data</span>(<span class="fu">read_csv</span>(<span class="st">"/Users/rosiequint/Desktop/ScM Biostats/140.777 Stat Programming/Project1/conreport2012.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>), <span class="dv">2012</span>)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>b_data_2017 <span class="ot">&lt;-</span> <span class="fu">clean_data</span>(<span class="fu">read_csv</span>(<span class="st">"/Users/rosiequint/Desktop/ScM Biostats/140.777 Stat Programming/Project1/conreport2017.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>), <span class="dv">2017</span>)</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>b_data_2022 <span class="ot">&lt;-</span> <span class="fu">clean_data</span>(<span class="fu">read_csv</span>(<span class="st">"/Users/rosiequint/Desktop/ScM Biostats/140.777 Stat Programming/Project1/conreport2022.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>), <span class="dv">2022</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Creating a single data frame for air quality by year</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>baltimore_air_quality <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(b_data_1982, b_data_1987, b_data_1992, b_data_1997, b_data_2002, b_data_2007, b_data_2012,  b_data_2017, b_data_2022) <span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="st">`</span><span class="at">Lead Max 3-Mo Avg</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">CBSA Code</span><span class="st">`</span>, <span class="sc">-</span>CBSA) <span class="co">#get rid because no data for any years</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(baltimore_air_quality)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 9 × 14
+  `CO 2nd Max 1-hr` `CO 2nd Max 8-hr` `NO2 98th Percentile 1-hr` `NO2 Mean 1-hr`
+              &lt;dbl&gt;             &lt;dbl&gt;                      &lt;dbl&gt;           &lt;dbl&gt;
+1              18.2              11.6                        112              26
+2              14.7               9.2                         96              35
+3              10.3               6.8                         82              31
+4               8                 4.9                         65              26
+5               9.2               3                           70              25
+6               3.3               2.3                         NA              14
+7               2.5               1.6                         56              16
+8               1.4               1.1                         49              16
+9               1.6               1.2                         44              15
+# ℹ 10 more variables: `Ozone 2nd Max 1-hr` &lt;dbl&gt;, `Ozone 4th Max 8-hr` &lt;dbl&gt;,
+#   `SO2 99th Percentile 1-hr` &lt;dbl&gt;, `SO2 2nd Max 24-hr` &lt;dbl&gt;,
+#   `SO2 Mean 1-hr` &lt;dbl&gt;, `PM2.5 98th Percentile 24-hr` &lt;dbl&gt;,
+#   `PM2.5 Weighted Mean 24-hr` &lt;dbl&gt;, `PM10 2nd Max 24-hr` &lt;dbl&gt;,
+#   `PM10 Mean 24-hr` &lt;dbl&gt;, year &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a new variable 'Pollutant' to distinguish between pollutants</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>baltimore_air_quality <span class="ot">&lt;-</span> baltimore_air_quality <span class="sc">%&gt;%</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(year, <span class="fu">contains</span>(<span class="st">"CO"</span>), <span class="fu">contains</span>(<span class="st">"NO2"</span>), <span class="fu">contains</span>(<span class="st">"Ozone"</span>), <span class="fu">contains</span>(<span class="st">"SO2"</span>), <span class="fu">contains</span>(<span class="st">"PM2.5"</span>), <span class="fu">contains</span>(<span class="st">"PM10"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="sc">-</span>year,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">"Metric"</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"Value"</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">Pollutant =</span> <span class="fu">case_when</span>(</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(Metric, <span class="st">"CO"</span>) <span class="sc">~</span> <span class="st">"CO"</span>,</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(Metric, <span class="st">"NO2"</span>) <span class="sc">~</span> <span class="st">"NO2"</span>,</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(Metric, <span class="st">"Ozone"</span>) <span class="sc">~</span> <span class="st">"Ozone"</span>,  <span class="co"># Use 'Ozone' instead of 'O3'</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(Metric, <span class="st">"SO2"</span>) <span class="sc">~</span> <span class="st">"SO2"</span>,</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(Metric, <span class="st">"PM2.5"</span>) <span class="sc">~</span> <span class="st">"PM2.5"</span>,</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>      <span class="fu">str_detect</span>(Metric, <span class="st">"PM10"</span>) <span class="sc">~</span> <span class="st">"PM10"</span>,</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"Other"</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Plot 1: Baltimore air pollution over time, grouped by pollutant type
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Here I created a plot for air pollution in Baltimore over time, grouped by pollutant type.</p>
+<p>14 variables were measured in total. One was removed (Lead Max 3-Mo. Avg) as there were no observations for any of the years studied. For the plot, I decided to group data by pollutant (e.g.&nbsp;showing both measurements for NO2 (98th percentile and mean) and plot onto the same graph.</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>baltimore_air_quality <span class="sc">%&gt;%</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(Value) <span class="sc">%&gt;%</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> Value, <span class="at">color =</span> Metric)) <span class="sc">+</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> Pollutant, <span class="at">scales =</span> <span class="st">"free_y"</span>) <span class="sc">+</span>  </span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Changesin Baltimore Air Pollutant Metrics Over Time,  1982-2022"</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Year"</span>,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Value"</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="example_analysis_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="part-2-investigating-the-relationship-between-pm2.5-and-poverty-rates-by-maryland-county." class="level2 page-columns page-full">
+<h2 class="anchored" data-anchor-id="part-2-investigating-the-relationship-between-pm2.5-and-poverty-rates-by-maryland-county.">Part 2: Investigating the relationship between PM2.5 and poverty rates by Maryland County.</h2>
+<p>To further explore the relationship between air quality regulation and human health in Maryland, I investigated the relationship between poverty and air pollution by county. I compared county-level data on mean PM2.5 concentration with the proportion living in poverty in each county.I chose to investigate PM2.5 specifically as it is believed to be the most harmful to human health, which was a central topic of my investigation (<span class="citation" data-cites="who_air_quality">(<a href="#ref-who_air_quality" role="doc-biblioref">World Health Organization, 2023</a>))</span>. I joined the data from two datasets by county, resulting in county-level data on Micrograms per cubic meter of PM2.5 and Proportions of Persons below 150% of Poverty, with both datasets from 2023.</p>
+
+<div class="no-row-height column-margin column-container"><div class="">
+<p><img src="md_poverty_map.webp.webp" class="img-fluid"></p>
+</div></div><div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>poverty_county_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"/Users/rosiequint/Desktop/ScM Biostats/140.777 Stat Programming/Project1/poverty_county_data.csv"</span>, <span class="at">skip =</span> <span class="dv">4</span>, <span class="at">na =</span> <span class="fu">c</span>(<span class="st">""</span>, <span class="st">"NA"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: One or more parsing issues, call `problems()` on your data frame for details,
+e.g.:
+  dat &lt;- vroom(...)
+  problems(dat)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 31 Columns: 5
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (3): County, FIPS, Rank within US (of 3143 counties)
+dbl (2): Value (Percent), People (&lt;150% Of Poverty)
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>pm25_county_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"/Users/rosiequint/Desktop/ScM Biostats/140.777 Stat Programming/Project1/pm2.5_county_data.csv"</span>, <span class="at">skip =</span> <span class="dv">5</span>, <span class="at">na =</span> <span class="fu">c</span>(<span class="st">""</span>, <span class="st">"NA"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: One or more parsing issues, call `problems()` on your data frame for details,
+e.g.:
+  dat &lt;- vroom(...)
+  problems(dat)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 3151 Columns: 3
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (2): County, FIPS
+dbl (1): Micrograms per cubic meter (PM2.5)(2)
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>pm25_county_data <span class="ot">&lt;-</span> pm25_county_data <span class="sc">%&gt;%</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">separate</span>(<span class="at">col =</span> County, <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"County"</span>, <span class="st">"State"</span>), <span class="at">sep =</span> <span class="st">", "</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(State <span class="sc">==</span> <span class="st">"Maryland"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">County =</span> <span class="fu">str_replace</span>(County, <span class="st">" County$"</span>, <span class="st">""</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Expected 2 pieces. Missing pieces filled with `NA` in 9 rows [1, 697, 3137,
+3145, 3146, 3147, 3148, 3149, 3150].</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>combined_pollution_poverty_data <span class="ot">&lt;-</span> poverty_county_data <span class="sc">%&gt;%</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(pm25_county_data, <span class="at">by =</span> <span class="st">"FIPS"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(County.x, <span class="st">`</span><span class="at">Value (Percent)</span><span class="st">`</span>, <span class="st">`</span><span class="at">Micrograms per cubic meter (PM2.5)(2)</span><span class="st">`</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">County</span><span class="st">`</span> <span class="ot">=</span> County.x,</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Proportions of Persons below 150% of Poverty</span><span class="st">`</span> <span class="ot">=</span> <span class="st">`</span><span class="at">Value (Percent)</span><span class="st">`</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Plot 2: Air pollution (mean PM2.5 concentration) and poverty by Maryland county
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Here I generated a scatter plot showing the relationship between poverty (measured as the proportion of persons below 150% of the poverty threshold) and air pollution (measured as micrograms of PM2.5 per cubic metre) by Maryland County. I included a regression line which shows a negative correlation (i.e.&nbsp;counties with higher levels of air pollutants having lower rates of poverty). This came as a surprise given the commonly-described association between poverty and poor health (for which air pollution is a known risk factor). However, this could be explained by area-level features such as wealthier counties tending to be more urban and thus have higher levels of pollutants, while poorer counties are more rural. Further research and perhaps an ecological study could help to establish whether this is the case here.</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(combined_pollution_poverty_data, <span class="fu">aes</span>(<span class="at">x =</span> <span class="st">`</span><span class="at">Micrograms per cubic meter (PM2.5)(2)</span><span class="st">`</span>, </span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">y =</span> <span class="st">`</span><span class="at">Proportions of Persons below 150% of Poverty</span><span class="st">`</span>)) <span class="sc">+</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span>  <span class="co"># Scatter plot</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">color =</span> <span class="st">"blue"</span>) <span class="sc">+</span>  <span class="co"># Linear regression line</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Scatter Plot of PM2.5 vs. Poverty Proportions with Regression Line"</span>,</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Micrograms per cubic meter (PM2.5)(2)"</span>,</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Proportions of Persons below 150% of Poverty"</span></span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="example_analysis_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="part-3-relationship-between-air-pollution-poverty-and-life-expectancy-at-a-county-level-in-maryland" class="level2">
+<h2 class="anchored" data-anchor-id="part-3-relationship-between-air-pollution-poverty-and-life-expectancy-at-a-county-level-in-maryland">Part 3: Relationship between air pollution, poverty, and life expectancy at a county level in Maryland</h2>
+<p>Here I created a combined dataset containing air pollution, life expectancy and poverty data for all counties in Maryland.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>lifeexp_county_data <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"/Users/rosiequint/Desktop/ScM Biostats/140.777 Stat Programming/Project1/lifeexp_county_data.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Rows: 1025 Columns: 5
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: ","
+chr (4): Jurisdiction, Race/ ethnicity, Year, Measure
+dbl (1): Value
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>lifeexp_county_data <span class="ot">&lt;-</span> lifeexp_county_data <span class="sc">%&gt;%</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(Year <span class="sc">==</span> <span class="st">"2019-2021"</span>, <span class="st">`</span><span class="at">Race/ ethnicity</span><span class="st">`</span> <span class="sc">==</span> <span class="st">"All races/ ethnicities (aggregated)"</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>combined_pollution_poverty_data <span class="ot">&lt;-</span> combined_pollution_poverty_data <span class="sc">%&gt;%</span> </span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">County =</span> <span class="fu">str_replace</span>(County, <span class="st">" County$"</span>, <span class="st">""</span>))</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>combined_full_data <span class="ot">&lt;-</span> combined_pollution_poverty_data <span class="sc">%&gt;%</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(lifeexp_county_data, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"County"</span> <span class="ot">=</span> <span class="st">"Jurisdiction"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span><span class="st">`</span><span class="at">Race/ ethnicity</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">Year</span><span class="st">`</span>, <span class="sc">-</span><span class="st">`</span><span class="at">Measure</span><span class="st">`</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="st">`</span><span class="at">Life Expectancy</span><span class="st">`</span> <span class="ot">=</span> <span class="st">`</span><span class="at">Value</span><span class="st">`</span>)</span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a><span class="co"># View the combined data</span></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(combined_full_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 4
+  County         Proportions of Perso…¹ Micrograms per cubic…² `Life Expectancy`
+  &lt;chr&gt;                           &lt;dbl&gt;                  &lt;dbl&gt;             &lt;dbl&gt;
+1 Somerset                         29.5                    7                74.5
+2 Baltimore City                   29.4                    8.6              71  
+3 Caroline                         26.6                    7.4              75.7
+4 Allegany                         26.4                    7.2              74.2
+5 Dorchester                       25.6                    5.9              75  
+6 Wicomico                         23                      7.4              75  
+# ℹ abbreviated names: ¹​`Proportions of Persons below 150% of Poverty`,
+#   ²​`Micrograms per cubic meter (PM2.5)(2)`</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Plots 3 and 4: Scatter plots of poverty vs life expectancy and air pollution vs life expectancy
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>I additionally created scatter plots showing the relationship between poverty and life expectancy, and air pollution and life expectancy across Maryland counties. As would be expected, proportion in poverty and life expectancy have a strong inverse association. Furthermore, pollution appears to have no association with life expectancy. This echoes the previous finding that poverty and pollution did not have a clear association, and is also surprising as we would expect air pollution to have a negative impact on a person’s health. Again, controlling for a greater number of area-level factors may reveal a different story.</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(combined_full_data, <span class="fu">aes</span>(<span class="at">x =</span> <span class="st">`</span><span class="at">Proportions of Persons below 150% of Poverty</span><span class="st">`</span>, <span class="at">y =</span> <span class="st">`</span><span class="at">Life Expectancy</span><span class="st">`</span>)) <span class="sc">+</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Poverty vs. Life Expectancy (Years)"</span>, <span class="at">x =</span> <span class="st">"Proportion of Persons Below 150% Poverty"</span>, <span class="at">y =</span> <span class="st">"Life Expectancy"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="example_analysis_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(combined_full_data, <span class="fu">aes</span>(<span class="at">x =</span> <span class="st">`</span><span class="at">Micrograms per cubic meter (PM2.5)(2)</span><span class="st">`</span>, <span class="at">y =</span> <span class="st">`</span><span class="at">Life Expectancy</span><span class="st">`</span>)) <span class="sc">+</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"blue"</span>, <span class="at">alpha =</span> <span class="fl">0.5</span>) <span class="sc">+</span> <span class="co"># Scatter plot with transparency</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">color =</span> <span class="st">"red"</span>) <span class="sc">+</span> <span class="co"># Linear regression line</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Relationship between Air Pollution and Life Expectancy"</span>,</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Air Pollution (PM2.5 in µg/m³)"</span>,</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Life Expectancy (Years)"</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span> <span class="co"># Minimal theme for clarity</span></span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>), <span class="co"># Center the title</span></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.title =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">12</span>),</span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">10</span>)</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="example_analysis_files/figure-html/unnamed-chunk-8-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Model 1: Regressing life expectancy on air pollution and poverty measures
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Here I developed and tested three regression models for predicting life expectancy using air pollution and/or poverty data. Inspecting all of these models reinforces the trends shown by the scatter plots, with the best model appearing to be that which includes only poverty as a predictor for life expectancy. Adding air quality to this model (as in lm_full_model) as it increases the p-value and lowers the F-statistic. Therefore, all we can conclude from this data is that poverty rates in Maryland’s counties is a good predictor for their life expectancy (an already well-established relationship).<br>
+</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>lm_pollution_poverty <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="st">`</span><span class="at">Proportions of Persons below 150% of Poverty</span><span class="st">`</span> <span class="sc">~</span> <span class="st">`</span><span class="at">Micrograms per cubic meter (PM2.5)(2)</span><span class="st">`</span>, <span class="at">data =</span> combined_full_data)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm_pollution_poverty)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = `Proportions of Persons below 150% of Poverty` ~ 
+    `Micrograms per cubic meter (PM2.5)(2)`, data = combined_full_data)
+
+Residuals:
+   Min     1Q Median     3Q    Max 
+-8.692 -5.178 -1.875  5.485 15.151 
+
+Coefficients:
+                                        Estimate Std. Error t value Pr(&gt;|t|)  
+(Intercept)                               33.543     13.399   2.503   0.0222 *
+`Micrograms per cubic meter (PM2.5)(2)`   -2.244      1.837  -1.221   0.2377  
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 7.335 on 18 degrees of freedom
+Multiple R-squared:  0.07654,   Adjusted R-squared:  0.02524 
+F-statistic: 1.492 on 1 and 18 DF,  p-value: 0.2377</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>lm_life_exp_poverty <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="st">`</span><span class="at">Life Expectancy</span><span class="st">`</span> <span class="sc">~</span> <span class="st">`</span><span class="at">Proportions of Persons below 150% of Poverty</span><span class="st">`</span>, <span class="at">data =</span> combined_full_data)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm_life_exp_poverty)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = `Life Expectancy` ~ `Proportions of Persons below 150% of Poverty`, 
+    data = combined_full_data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-2.9119 -1.1100 -0.1893  1.2484  4.5563 
+
+Coefficients:
+                                               Estimate Std. Error t value
+(Intercept)                                    82.86912    1.08848  76.133
+`Proportions of Persons below 150% of Poverty` -0.32712    0.05804  -5.636
+                                               Pr(&gt;|t|)    
+(Intercept)                                     &lt; 2e-16 ***
+`Proportions of Persons below 150% of Poverty` 2.39e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.88 on 18 degrees of freedom
+Multiple R-squared:  0.6383,    Adjusted R-squared:  0.6182 
+F-statistic: 31.77 on 1 and 18 DF,  p-value: 2.394e-05</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>lm_life_exp_pollution <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="st">`</span><span class="at">Life Expectancy</span><span class="st">`</span> <span class="sc">~</span> <span class="st">`</span><span class="at">Micrograms per cubic meter (PM2.5)(2)</span><span class="st">`</span>, <span class="at">data =</span> combined_full_data)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm_life_exp_pollution)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = `Life Expectancy` ~ `Micrograms per cubic meter (PM2.5)(2)`, 
+    data = combined_full_data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-6.3364 -2.1203 -0.2784  1.7781  6.3959 
+
+Coefficients:
+                                        Estimate Std. Error t value Pr(&gt;|t|)
+(Intercept)                             76.53721    5.70675  13.412 8.26e-11
+`Micrograms per cubic meter (PM2.5)(2)`  0.09293    0.78230   0.119    0.907
+                                           
+(Intercept)                             ***
+`Micrograms per cubic meter (PM2.5)(2)`    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 3.124 on 18 degrees of freedom
+Multiple R-squared:  0.0007833, Adjusted R-squared:  -0.05473 
+F-statistic: 0.01411 on 1 and 18 DF,  p-value: 0.9068</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>lm_full_model <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="st">`</span><span class="at">Life Expectancy</span><span class="st">`</span> <span class="sc">~</span> <span class="st">`</span><span class="at">Micrograms per cubic meter (PM2.5)(2)</span><span class="st">`</span> <span class="sc">+</span> <span class="st">`</span><span class="at">Proportions of Persons below 150% of Poverty</span><span class="st">`</span>, <span class="at">data =</span> combined_full_data)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(lm_full_model)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = `Life Expectancy` ~ `Micrograms per cubic meter (PM2.5)(2)` + 
+    `Proportions of Persons below 150% of Poverty`, data = combined_full_data)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-3.4878 -1.0768 -0.1639  1.2694  3.6395 
+
+Coefficients:
+                                               Estimate Std. Error t value
+(Intercept)                                    88.30404    3.86648  22.838
+`Micrograms per cubic meter (PM2.5)(2)`        -0.69410    0.47503  -1.461
+`Proportions of Persons below 150% of Poverty` -0.35080    0.05858  -5.989
+                                               Pr(&gt;|t|)    
+(Intercept)                                    3.39e-14 ***
+`Micrograms per cubic meter (PM2.5)(2)`           0.162    
+`Proportions of Persons below 150% of Poverty` 1.47e-05 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 1.823 on 17 degrees of freedom
+Multiple R-squared:  0.6787,    Adjusted R-squared:  0.6409 
+F-statistic: 17.95 on 2 and 17 DF,  p-value: 6.443e-05</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="results-and-analysis" class="level1">
+<h1>Results and analysis</h1>
+<p>First, I briefly explored how air pollution has changed over time in Baltimore City, and found that all of the measured pollutants had decreased in mean concentration over the past 40 years (data from 1982-2022).</p>
+<p>I then investigated the relationship between proportion of people in poverty and air pollution (measured by PM2.5 concentration) by county in Maryland, to determine whether there was an association between the two. A scatter plot showed that there appeared to be a slight negative relationship between the two.</p>
+<p>Finally, I performed regression analysis to determine whether air pollution could be a good predictor of life expectancy in Maryland’s counties. I regressed life expectancy on air pollution and found the model was not a good fit. I then regressed it on poverty as a comparator, as poverty has a known strong association with life expectancy, and found a well-fitting model, as would be expected. I also found that adding air pollution to the regression model did not improve it.</p>
+<p>My main finding from this project was that air pollution at a county-level is a fairly poor predictor of both poverty and life expectancy. Anecdotally, I would assume that higher levels of air pollution causes poor health, so I would be inclined to perform follow-up research. However, this apparent lack of correlation could also be simply due to the complexity of measuring health, a lack of data on possible confounders, or simply poor data quality. The data used for this analysis may be limited by its different sources (who may use more or less up-to-date measurements) or its summary nature (offering only one yearly statistic for each county).</p>
+</section>
+<section id="functions-used" class="level1">
+<h1>Functions used:</h1>
+<p>From dplyr filter() select() mutate() rename() inner_join() summarize() group_by() arrange() From ggplot2 ggplot() aes() geom_line() geom_point() geom_smooth() facet_wrap() labs() theme() theme_minimal() scale_color_manual() From tidyr pivot_longer() separate()</p>
 
 
 
-</main> <!-- /main -->
+</section>
+
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-epa_air_quality" class="csl-entry" role="listitem">
+Environmental Protection Agency. (2023). <em>Air quality statistics report</em>. <a href="https://www.epa.gov/outdoor-air-quality-data/air-quality-statistics-report">https://www.epa.gov/outdoor-air-quality-data/air-quality-statistics-report</a>
+</div>
+<div id="ref-maryland_life_expectancy" class="csl-entry" role="listitem">
+Maryland Department of Health. (n.d.). <em>Life expectancy in maryland</em>. <a href="https://health.maryland.gov/phpa/OEHFP/EH/Pages/LifeExpectancy.aspx">https://health.maryland.gov/phpa/OEHFP/EH/Pages/LifeExpectancy.aspx</a>
+</div>
+<div id="ref-maryland_air_quality_health" class="csl-entry" role="listitem">
+Maryland Department of the Environment. (2023). <em>Maryland’s health and air quality program</em>. <a href="https://mde.maryland.gov/programs/air/pages/md_haa.aspx">https://mde.maryland.gov/programs/air/pages/md_haa.aspx</a>
+</div>
+<div id="ref-nimhd_air_pollution" class="csl-entry" role="listitem">
+National Institute on Minority Health and Health Disparities. (2023). <em>Air pollution data portal</em>. <a href="https://hdpulse.nimhd.nih.gov/data-portal/physical/table?age=001&amp;age_options=ageall_1&amp;demo=234&amp;demo_options=air_pollution_1&amp;physicaltopic=002&amp;physicaltopic_options=physical_2&amp;race=00&amp;race_options=raceall_1&amp;sex=0&amp;sex_options=sexboth_1&amp;statefips=99&amp;statefips_options=area_states&amp;race_saved=00&amp;sex_saved=0&amp;statefips_saved=99">https://hdpulse.nimhd.nih.gov/data-portal/physical/table?age=001&amp;age_options=ageall_1&amp;demo=234&amp;demo_options=air_pollution_1&amp;physicaltopic=002&amp;physicaltopic_options=physical_2&amp;race=00&amp;race_options=raceall_1&amp;sex=0&amp;sex_options=sexboth_1&amp;statefips=99&amp;statefips_options=area_states&amp;race_saved=00&amp;sex_saved=0&amp;statefips_saved=99</a>
+</div>
+<div id="ref-who_air_quality" class="csl-entry" role="listitem">
+World Health Organization. (2023). <em>Air quality and health</em>. <a href="https://www.who.int/teams/environment-climate-change-and-health/air-quality-and-health/health-impacts/types-of-pollutants">https://www.who.int/teams/environment-climate-change-and-health/air-quality-and-health/health-impacts/types-of-pollutants</a>
+</div>
+</div></section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {

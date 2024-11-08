@@ -11,7 +11,7 @@ The intended audience for this analysis would be public health policymakers seek
 
 Data for part 1: Baltimore air quality ([@epa_air_quality]). [Data Dictionary](https://www.epa.gov/outdoor-air-quality-data/about-air-data-reports)
 
-Data for part 2: PM2.5 by county ([@nihmd-air_pollution]), Life expectancy by county ([@maryland_life_expectancy]), Poverty by county ([@nihmd_poverty]), [Data Dictionary](https://hdpulse.nimhd.nih.gov/data-portal/physical/table?age=001&age_options=ageall_1&demo=234&demo_options=air_pollution_1&physicaltopic=002&physicaltopic_options=physical_2&race=00&race_options=raceall_1&sex=0&sex_options=sexboth_1&statefips=99&statefips_options=area_states&race_saved=00&sex_saved=0&statefips_saved=99)
+Data for part 2: PM2.5 by county ([@nimhd_air_pollution]), Life expectancy by county ([@maryland_life_expectancy]), Poverty by county ([@nimhd_poverty]), [Data Dictionary](https://hdpulse.nimhd.nih.gov/data-portal/physical/table?age=001&age_options=ageall_1&demo=234&demo_options=air_pollution_1&physicaltopic=002&physicaltopic_options=physical_2&race=00&race_options=raceall_1&sex=0&sex_options=sexboth_1&statefips=99&statefips_options=area_states&race_saved=00&sex_saved=0&statefips_saved=99)
 
 :::
 

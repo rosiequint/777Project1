@@ -12,6 +12,8 @@ website:
       - text: "Example Analysis"
         href: example_analysis.qmd
 
+output-dir: _site  
+
 format:
   html:
     theme: cerulean
@@ -22,3 +24,9 @@ editor: visual
 
 bibliography: references.bib
 csl: apa.csl
+
+publish:
+  gh-pages:
+    url: "https://rosiequint.github.io/project1-rosiequint"
+    branch: gh-pages 
+    dir: _site
