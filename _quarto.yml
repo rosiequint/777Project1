@@ -1,5 +1,6 @@
 project:
   type: website
+  output-dir: docs
 
 website:
   title: "Rosie Quint"
@@ -12,7 +13,6 @@ website:
       - text: "Example Analysis"
         href: example_analysis.qmd
 
-output-dir: _site  
 
 format:
   html:
@@ -25,8 +25,3 @@ editor: visual
 bibliography: references.bib
 csl: apa.csl
 
-publish:
-  gh-pages:
-    url: "https://rosiequint.github.io/project1-rosiequint"
-    branch: gh-pages 
-    dir: _site
